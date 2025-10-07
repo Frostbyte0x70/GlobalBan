@@ -16,27 +16,27 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * @param mainServerOnly True if the command can only be used in the main server set in the bot config
  */
 class Command(private val innerCall: (GenericCommandInteractionEvent) -> Unit, val mainServerOnly: Boolean = false) {
-    private val logger = getLogger(this::class)
+	private val logger = getLogger(this::class)
 
-    fun run(event: GenericCommandInteractionEvent) {
-        logger.info("Command run by ${event.user.name} on ${event.guild?.name ?: "DMs"}: ${event.commandString}")
+	fun run(event: GenericCommandInteractionEvent) {
+		logger.info("Command run by ${event.user.name} on ${event.guild?.name ?: "DMs"}: ${event.commandString}")
 
-        val serverId = event.guild?.idLong
+		val serverId = event.guild?.idLong
 
-        if (serverId != null) {
-            // The command was run in a server, check that it can be run here
+		if (serverId != null) {
+			// The command was run in a server, check that it can be run here
 
-            if (!Whitelist.get().isWhitelisted(serverId)) {
-                event.reply_("Error: Server is not whitelisted.", ephemeral = true).queue()
-                return
-            }
+			if (!Whitelist.get().isWhitelisted(serverId)) {
+				event.reply_("Error: Server is not whitelisted.", ephemeral = true).queue()
+				return
+			}
 
-            if (mainServerOnly && serverId != Env.mainServerId) {
-                event.reply_("Error: This command can only be used in the main server.", ephemeral = true).queue()
-                return
-            }
-        }
+			if (mainServerOnly && serverId != Env.mainServerId) {
+				event.reply_("Error: This command can only be used in the main server.", ephemeral = true).queue()
+				return
+			}
+		}
 
-        innerCall(event)
-    }
+		innerCall(event)
+	}
 }

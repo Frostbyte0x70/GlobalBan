@@ -12,27 +12,26 @@ import kotlin.reflect.KClass
  */
 fun getLogger(c: KClass<*>?, level: Level? = null): Logger {
 	val logger = LoggerFactory.getLogger(c?.simpleName ?: "") as Logger
-    logger.level = level ?: Env.logLevel
-    return logger
+	logger.level = level ?: Env.logLevel
+	return logger
 }
 
 /**
  * Attempts to parse a string as a boolean value
  */
 fun parseBool(value: String): Boolean {
-    return when(value.lowercase()) {
-        "0", "false" -> false
-        "1", "true" -> true
-        else -> throw FatalErrorException("Invalid boolean value '$value'")
-    }
+	return when (value.lowercase()) {
+		"0", "false" -> false
+		"1", "true" -> true
+		else -> throw FatalErrorException("Invalid boolean value '$value'")
+	}
 }
 
 /**
  * Attempts to read the value of an environment variable. Throws [FatalErrorException] if unset.
  */
 fun tryGetEnvVar(name: String): String {
-    return System.getenv(name) ?:
-    throw FatalErrorException("$name environment variable missing")
+	return System.getenv(name) ?: throw FatalErrorException("$name environment variable missing")
 }
 
 /**
