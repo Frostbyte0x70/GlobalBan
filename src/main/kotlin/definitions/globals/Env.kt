@@ -1,5 +1,7 @@
-import Env.DEFAULT_LOG_LEVEL
+package definitions.globals
+
 import org.apache.logging.log4j.Level
+import tryGetEnvVar
 
 /**
  * Object containing values read from environment variables
@@ -17,7 +19,7 @@ data object Env {
     val DEFAULT_LOG_LEVEL: Level = Level.INFO
 
     /** Bot token */
-    val token: String by lazy {tryGetEnvVar(ENV_BOT_TOKEN)}
+    val token: String by lazy { tryGetEnvVar(ENV_BOT_TOKEN)}
 
     /**
      * ID of the main server for the bot. All commands can be run from this server. Some commands can only be
@@ -25,11 +27,11 @@ data object Env {
      */
     val mainServerId: Long by lazy {tryGetEnvVar(ENV_MAIN_SERVER_ID).toLong()}
 
-//    val dbHost: String by lazy {tryGetEnvVar(ENV_DB_HOST)}
-//    val dbPort: String by lazy {tryGetEnvVar(ENV_DB_PORT)}
-//    val dbUser: String by lazy {tryGetEnvVar(ENV_DB_USER)}
-//    val dbPassword: String by lazy {tryGetEnvVar(ENV_DB_PASSWORD)}
-//    val dbDatabase: String by lazy {tryGetEnvVar(ENV_DB_DATABASE)}
+    val dbHost: String by lazy {tryGetEnvVar(ENV_DB_HOST)}
+    val dbPort: String by lazy {tryGetEnvVar(ENV_DB_PORT)}
+    val dbUser: String by lazy {tryGetEnvVar(ENV_DB_USER)}
+    val dbPassword: String by lazy {tryGetEnvVar(ENV_DB_PASSWORD)}
+    val dbDatabase: String by lazy {tryGetEnvVar(ENV_DB_DATABASE)}
 
     /**
      * Logging level to use for log calls. If unset in the environment configuration, defaults to [DEFAULT_LOG_LEVEL].

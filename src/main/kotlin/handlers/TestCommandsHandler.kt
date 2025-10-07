@@ -1,7 +1,8 @@
-package features
+package handlers
 
 import definitions.Command
 import definitions.CommandCreator
+import definitions.globals.Env
 import dev.minn.jda.ktx.interactions.commands.restrict
 import dev.minn.jda.ktx.interactions.components.button
 import dev.minn.jda.ktx.messages.reply_
@@ -15,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
  * Contains a few test commands
  * TODO: Remove eventually
  */
-class TestCommands(val jda: JDA, commandCreator: CommandCreator) {
+class TestCommandsHandler(val jda: JDA, commandCreator: CommandCreator) {
     companion object {
         private const val ENV_TEST_COMMAND = "envtest"
         private const val BUTTON_TEST_COMMAND = "buttontest"

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference
  * Class that handles database connections and operations
  */
 class Database(val host: String, val port: String, val user: String, val password: String, val database: String) {
-    val logger = getLogger(Database::class)
+    val logger = getLogger(this::class)
     var connection: Connection
 
     companion object {

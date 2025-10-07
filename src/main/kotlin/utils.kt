@@ -1,3 +1,4 @@
+import definitions.globals.Env
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -6,7 +7,7 @@ import kotlin.reflect.KClass
 
 /**
  * Returns a logger for the given class. A logging [level] can optionally be specified. If [level] is not set,
- * [Env.logLevel] will be used.
+ * [definitions.globals.Env.logLevel] will be used.
  */
 fun getLogger(c: KClass<*>, level: Level? = null): Logger {
     val logger = LogManager.getLogger(c)
