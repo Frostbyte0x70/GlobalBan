@@ -1,6 +1,6 @@
 package definitions.globals
 
-import org.apache.logging.log4j.Level
+import ch.qos.logback.classic.Level
 import parseBool
 import tryGetEnvVar
 

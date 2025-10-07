@@ -16,7 +16,6 @@ class Main {
 
     @Suppress("unused")
     fun main() {
-        JDALogger.setFallbackLoggerEnabled(false)
         val jda = light(Env.token)
 
         // Create DB classes
