@@ -51,9 +51,6 @@ class TestCommandsHandler(val jda: JDA, commandCreator: CommandCreator) {
 		val button = jda.button(ButtonStyle.PRIMARY, "Test button") { event -> handleTestButton(event) }
 
 		event.reply_("A wild button appeared!").addActionRow(button).queue()
-
-		// Components v2 syntax - TODO: Use compoenents v2 once jda-ktx supports it
-		// event.reply_("A wild button appeared!").addComponents(ActionRow.of(button))
 	}
 
 	private fun handleTestButton(event: ButtonInteractionEvent) {

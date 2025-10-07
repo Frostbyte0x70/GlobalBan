@@ -3,7 +3,6 @@ package definitions
 import definitions.globals.Env
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.messages.reply_
-import handlers.ServerJoinHandler
 import getLogger
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 

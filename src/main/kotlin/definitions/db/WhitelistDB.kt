@@ -9,7 +9,7 @@ import java.sql.SQLException
  */
 class WhitelistDB(val db: Database) {
 	companion object {
-		private const val WHITELIST_TABLE_NAME = "Whitelist"
+		private const val WHITELIST_TABLE_NAME = "whitelist"
 	}
 
 	init {
@@ -45,7 +45,8 @@ class WhitelistDB(val db: Database) {
 	 * Adds a server to the whitelist. If the server is already on the list, it will not be added again.
 	 */
 	fun addServer(id: Long) {
-		with(PrepStatement(db, "INSERT INTO $WHITELIST_TABLE_NAME (server_id) VALUES (?) ON DUPLICATE KEY UPDATE")) {
+		with(PrepStatement(db, "INSERT INTO $WHITELIST_TABLE_NAME (server_id) VALUES (?) " +
+			"ON DUPLICATE KEY UPDATE server_id = server_id")) {
 			setLong(id)
 			executeUpdate()
 		}

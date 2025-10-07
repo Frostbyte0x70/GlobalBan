@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 
 /**
  * Handles whitelist-related commands
- * TODO: Test
  */
 class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
 	companion object {
