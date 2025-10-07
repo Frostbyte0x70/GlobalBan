@@ -52,9 +52,9 @@ object Whitelist {
      * Adds a server to the whitelist. If the server is already on the list, it will not be added again.
      */
     fun add(serverId: Long) {
-        whitelistDB.addServer(serverId)
         if (!whitelist.contains(serverId)) {
-            whitelist.add(serverId)
+			whitelistDB.addServer(serverId)
+			whitelist.add(serverId)
         }
     }
 

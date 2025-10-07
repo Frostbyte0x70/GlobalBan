@@ -2,6 +2,7 @@ package handlers
 
 import definitions.Command
 import definitions.CommandCreator
+import definitions.globals.Env
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
@@ -16,7 +17,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * Handles whitelist-related commands
  * TODO: Test
  */
-class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator, val whitelist: Whitelist) {
+class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
     companion object {
         private const val WHITELIST_COMMAND = "whitelist"
         private const val SHOW_SUBCOMMAND = "show"
@@ -34,10 +35,10 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator, val whiteli
                 restrict(guild=true, perm = Permission.ADMINISTRATOR)
                 subcommand(SHOW_SUBCOMMAND, "Show whitelisted servers")
                 subcommand(ADD_SUBCOMMAND, "Add a server to the whitelist") {
-                    option<Long>("server_id", "ID of the server to add", required = true)
+                    option<String>("server_id", "ID of the server to add", required = true)
                 }
                 subcommand(REMOVE_SUBCOMMAND, "Remove a server from the whitelist") {
-                    option<Long>("server_id", "ID of the server to remove", required = true)
+                    option<String>("server_id", "ID of the server to remove", required = true)
                 }
             }
         }
@@ -52,28 +53,47 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator, val whiteli
     }
 
     private fun runShowSubcommand(event: GenericCommandInteractionEvent) {
+		val servers = Whitelist.get().getAllServers()
         var text = "Whitelisted servers:\n"
-        for (serverId in Whitelist.get().getAllServers()) {
-            text += "- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
+
+		if (!servers.contains(Env.mainServerId)) {
+			// Main server is implicitly whitelisted
+			text += "- ${(jda.getGuildById(Env.mainServerId)?.name?.plus(" ")) ?: ""}(${Env.mainServerId}) " +
+				"(Implicit - Main server)\n"
+		}
+
+        for (serverId in servers) {
+            text += "- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)\n"
         }
         event.reply_(text.removeSuffix("\n")).queue()
     }
 
     private fun runAddSubcommand(event: GenericCommandInteractionEvent) {
-        event.deferReply(true)
-        try {
-            Whitelist.get().add(event.getOption<Long>("server_id")!!)
+		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
+		if (serverId == null) {
+			event.reply_("Error: The provided server ID is not valid").queue()
+			return
+		}
+
+		event.deferReply(true)
+		try {
+            Whitelist.get().add(serverId)
             event.reply_("Successfully added the server to the whitelist").queue()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             // TODO: ErrorHandler class
             event.reply_("Error").queue()
+			throw e
         }
     }
 
     private fun runRemoveSubcommand(event: GenericCommandInteractionEvent) {
-        event.deferReply(true)
-        val serverId = event.getOption<Long>("server_id")!!
+		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
+		if (serverId == null) {
+			event.reply_("Error: The provided server ID is not valid").queue()
+			return
+		}
 
+        event.deferReply(true)
         try {
             Whitelist.get().remove(serverId)
 
@@ -84,9 +104,10 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator, val whiteli
             }
 
             event.reply_("Successfully removed the server from the whitelist").queue()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             // TODO: ErrorHandler class
             event.reply_("Error").queue()
+			throw e
         }
     }
 }

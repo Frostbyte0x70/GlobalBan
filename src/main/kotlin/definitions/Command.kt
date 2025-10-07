@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * @param mainServerOnly True if the command can only be used in the main server set in the bot config
  */
 class Command(private val innerCall: (GenericCommandInteractionEvent) -> Unit, val mainServerOnly: Boolean = false) {
-    val logger = getLogger(this::class)
+    private val logger = getLogger(this::class)
 
     fun run(event: GenericCommandInteractionEvent) {
         logger.info("Command run by ${event.user.name} on ${event.guild?.name ?: "DMs"}: ${event.commandString}")

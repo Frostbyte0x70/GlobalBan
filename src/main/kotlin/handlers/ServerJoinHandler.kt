@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent
  * Implements tasks that should be run when the bot joins a server
  */
 class ServerJoinHandler(jda: JDA) {
-    val logger = getLogger(this::class)
+    private val logger = getLogger(this::class)
 
     init {
         // Leave joined guilds if they are not whitelisted
@@ -19,11 +19,11 @@ class ServerJoinHandler(jda: JDA) {
                 logger.info("Leaving server '${event.guild.name} because it's not whitelisted'")
                 event.guild.leave().queue(null,
                     // TODO: Send error to main server
-                    {exception -> }
+                    {exception -> throw exception}
                 )
             }
 
-            // TODO: Server join setup, if needed
+            // TODO: Server join setup
         }
     }
 }

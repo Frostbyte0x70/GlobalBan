@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.internal.utils.JDALogger
 
 class Main {
-    val logger = getLogger(this::class)
+    private val logger = getLogger(this::class)
 
     @Suppress("unused")
     fun main() {
@@ -24,15 +24,17 @@ class Main {
         val wdb = WhitelistDB(db)
 
         // Create global objects
-        val whitelist = Whitelist.create(wdb)
+        Whitelist.create(wdb)
 
+		// Wait for JDA to be done before performing any actions that require accessing its cache
+		jda.awaitReady()
         val commandCreator = CommandCreator(jda)
 
-        // Create handlers
-        TestCommandsHandler(jda, commandCreator)
-        WhitelistHandler(jda, commandCreator, whitelist)
-        ServerJoinHandler(jda)
-        BotStartHandler(jda)
+		// Create handlers
+		BotStartHandler(jda)
+		ServerJoinHandler(jda)
+		TestCommandsHandler(jda, commandCreator)
+		WhitelistHandler(jda, commandCreator)
 
         // Register all commands
         commandCreator.register()
