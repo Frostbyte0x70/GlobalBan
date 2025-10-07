@@ -10,6 +10,7 @@ import tryGetEnvVar
 data object Env {
     private const val ENV_BOT_TOKEN = "BOT_TOKEN"
     private const val ENV_MAIN_SERVER_ID = "MAIN_SERVER_ID"
+    private const val ENV_MAIN_ERROR_CHANNEL = "MAIN_ERROR_CHANNEL"
     private const val ENV_DB_HOST: String = "DB_HOST"
     private const val ENV_DB_PORT: String = "DB_PORT"
     private const val ENV_DB_USER: String = "DB_USER"
@@ -28,6 +29,11 @@ data object Env {
      * run from this server.
      */
     val mainServerId: Long by lazy {tryGetEnvVar(ENV_MAIN_SERVER_ID).toLong()}
+
+	/**
+	 * ID of a channel within the main server where stacktraces of errors will be printed.
+	 */
+	val mainErrorChannel: Long? by lazy {System.getenv(ENV_MAIN_ERROR_CHANNEL)?.toLong()}
 
     val dbHost: String by lazy {tryGetEnvVar(ENV_DB_HOST)}
     val dbPort: String by lazy {tryGetEnvVar(ENV_DB_PORT)}

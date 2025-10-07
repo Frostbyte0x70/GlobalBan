@@ -16,10 +16,7 @@ class BotStartHandler(jda: JDA) {
         for (guild in jda.guilds) {
             if (!whitelist.isWhitelisted(guild.idLong)) {
                 logger.info("Leaving server '${guild.name} because it's not whitelisted'")
-                guild.leave().queue(null,
-                    // TODO: Send error to main server
-                    {exception -> throw exception}
-                )
+                guild.leave().queue()
             }
         }
     }

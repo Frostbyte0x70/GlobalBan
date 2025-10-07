@@ -1,7 +1,9 @@
 package handlers
 
+import DbOperationException
 import definitions.Command
 import definitions.CommandCreator
+import definitions.ErrorHandler
 import definitions.globals.Env
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.interactions.commands.option
@@ -9,6 +11,7 @@ import dev.minn.jda.ktx.interactions.commands.restrict
 import dev.minn.jda.ktx.interactions.commands.subcommand
 import dev.minn.jda.ktx.interactions.components.getOption
 import dev.minn.jda.ktx.messages.reply_
+import dev.minn.jda.ktx.messages.send
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -71,29 +74,30 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
     private fun runAddSubcommand(event: GenericCommandInteractionEvent) {
 		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
 		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid").queue()
+			event.reply_("Error: The provided server ID is not valid", ephemeral = true).queue()
 			return
 		}
 
-		event.deferReply(true)
+		event.deferReply(true).queue()
 		try {
             Whitelist.get().add(serverId)
-            event.reply_("Successfully added the server to the whitelist").queue()
-        } catch (e: Exception) {
-            // TODO: ErrorHandler class
-            event.reply_("Error").queue()
-			throw e
+            event.hook.send("Successfully added the server to the whitelist").queue()
+        } catch (e: DbOperationException) {
+            with (ErrorHandler(e)) {
+				printToErrorChannel(jda, event.guild)
+				replyDeferred(event)
+			}
         }
     }
 
     private fun runRemoveSubcommand(event: GenericCommandInteractionEvent) {
 		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
 		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid").queue()
+			event.reply_("Error: The provided server ID is not valid", ephemeral = true).queue()
 			return
 		}
 
-        event.deferReply(true)
+        event.deferReply(true).queue()
         try {
             Whitelist.get().remove(serverId)
 
@@ -103,11 +107,12 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
                 jda.getGuildById(serverId)?.leave()?.complete()
             }
 
-            event.reply_("Successfully removed the server from the whitelist").queue()
+            event.hook.send("Successfully removed the server from the whitelist").queue()
         } catch (e: Exception) {
-            // TODO: ErrorHandler class
-            event.reply_("Error").queue()
-			throw e
+			with (ErrorHandler(e)) {
+				printToErrorChannel(jda, event.guild)
+				replyDeferred(event)
+			}
         }
     }
 }

@@ -1,4 +1,5 @@
 import definitions.CommandCreator
+import definitions.ErrorHandler
 import definitions.db.Database
 import definitions.db.WhitelistDB
 import definitions.globals.Env
@@ -9,7 +10,7 @@ import handlers.ServerJoinHandler
 import handlers.TestCommandsHandler
 import handlers.WhitelistHandler
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.internal.utils.JDALogger
+import net.dv8tion.jda.api.requests.RestAction
 
 class Main {
     private val logger = getLogger(this::class)
@@ -27,7 +28,8 @@ class Main {
 
 		// Wait for JDA to be done before performing any actions that require accessing its cache
 		jda.awaitReady()
-        val commandCreator = CommandCreator(jda)
+		RestAction.setDefaultFailure { e -> ErrorHandler(e).printToErrorChannel(jda) }
+		val commandCreator = CommandCreator(jda)
 
 		// Create handlers
 		BotStartHandler(jda)
