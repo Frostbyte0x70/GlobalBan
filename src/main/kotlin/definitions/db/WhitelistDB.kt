@@ -16,8 +16,8 @@ class WhitelistDB(val db: Database) {
 		// Create the table if it doesn't exist
 		try {
 			db.updateWithReconnect(
-				"CREATE TABLE IF NOT EXISTS $WHITELIST_TABLE_NAME(`server_id` BIGINT(30) UNSIGNED NOT NULL, " +
-					"PRIMARY KEY (`server_id`));"
+				"CREATE TABLE IF NOT EXISTS $WHITELIST_TABLE_NAME(server_id BIGINT(30) UNSIGNED NOT NULL, " +
+					"PRIMARY KEY (server_id));"
 			)
 		} catch (e: DbOperationException) {
 			throw FatalErrorException("Cannot create whitelist table", e)

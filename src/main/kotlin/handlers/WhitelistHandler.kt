@@ -1,6 +1,5 @@
 package handlers
 
-import DbOperationException
 import definitions.Command
 import definitions.CommandCreator
 import definitions.ErrorHandler
@@ -19,7 +18,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 /**
  * Handles whitelist-related commands
  */
-class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
+class WhitelistHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	companion object {
 		private const val WHITELIST_COMMAND = "whitelist"
 		private const val SHOW_SUBCOMMAND = "show"
@@ -73,15 +72,15 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
 	private fun runAddSubcommand(event: GenericCommandInteractionEvent) {
 		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
 		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid", ephemeral = true).queue()
+			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
 			return
 		}
 
 		event.deferReply(true).queue()
 		try {
 			Whitelist.get().add(serverId)
-			event.hook.send("Successfully added the server to the whitelist").queue()
-		} catch (e: DbOperationException) {
+			event.hook.send("Successfully added the server to the whitelist.").queue()
+		} catch (e: Exception) {
 			with(ErrorHandler(e)) {
 				printToErrorChannel(jda, event.guild)
 				replyDeferred(event)
@@ -92,7 +91,7 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
 	private fun runRemoveSubcommand(event: GenericCommandInteractionEvent) {
 		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
 		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid", ephemeral = true).queue()
+			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
 			return
 		}
 
@@ -106,7 +105,7 @@ class WhitelistHandler(val jda: JDA, commandCreator: CommandCreator) {
 				jda.getGuildById(serverId)?.leave()?.complete()
 			}
 
-			event.hook.send("Successfully removed the server from the whitelist").queue()
+			event.hook.send("Successfully removed the server from the whitelist.").queue()
 		} catch (e: Exception) {
 			with(ErrorHandler(e)) {
 				printToErrorChannel(jda, event.guild)

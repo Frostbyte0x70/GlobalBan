@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
 /**
  * Class used to bulk register commands and their listeners.
  */
-class CommandCreator(val jda: JDA) {
+class CommandCreator(private val jda: JDA) {
 	private val logger = getLogger(this::class)
 	private val updateCommandsAction: CommandListUpdateAction?
 

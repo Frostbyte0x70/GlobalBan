@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
  * Contains a few test commands
  * TODO: Remove eventually
  */
-class TestCommandsHandler(val jda: JDA, commandCreator: CommandCreator) {
+class TestCommandsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	companion object {
 		private const val ENV_TEST_COMMAND = "envtest"
 		private const val BUTTON_TEST_COMMAND = "buttontest"

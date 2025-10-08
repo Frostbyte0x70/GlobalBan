@@ -1,12 +1,15 @@
 import definitions.CommandCreator
 import definitions.ErrorHandler
 import definitions.db.Database
+import definitions.db.SettingsDB
 import definitions.db.WhitelistDB
 import definitions.globals.Env
+import definitions.globals.Settings
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.jdabuilder.light
 import handlers.BotStartHandler
 import handlers.ServerJoinHandler
+import handlers.SettingsHandler
 import handlers.TestCommandsHandler
 import handlers.WhitelistHandler
 import net.dv8tion.jda.api.Permission
@@ -22,9 +25,11 @@ class Main {
 		// Create DB classes
 		val db = Database(Env.dbHost, Env.dbPort, Env.dbUser, Env.dbPassword, Env.dbDatabase)
 		val wdb = WhitelistDB(db)
+		val sdb = SettingsDB(db)
 
 		// Create global objects
 		Whitelist.create(wdb)
+		Settings.create(sdb)
 
 		// Wait for JDA to be done before performing any actions that require accessing its cache
 		jda.awaitReady()
@@ -36,6 +41,7 @@ class Main {
 		ServerJoinHandler(jda)
 		TestCommandsHandler(jda, commandCreator)
 		WhitelistHandler(jda, commandCreator)
+		SettingsHandler(jda, commandCreator)
 
 		// Register all commands
 		commandCreator.register()
