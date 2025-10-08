@@ -10,8 +10,6 @@ import definitions.db.WhitelistDB
  */
 object Whitelist {
 	private lateinit var whitelistDB: WhitelistDB
-
-	// TODO: This is not thread-safe
 	private lateinit var whitelist: MutableList<Long>
 
 	/**
@@ -38,6 +36,7 @@ object Whitelist {
 	/**
 	 * Returns whether a server is whitelisted or not. The main server is always considered to be whitelisted.
 	 */
+	@Synchronized
 	fun isWhitelisted(serverId: Long): Boolean {
 		return serverId == Env.mainServerId || whitelist.contains(serverId)
 	}
@@ -45,6 +44,7 @@ object Whitelist {
 	/**
 	 * Returns a list with the ID of all whitelisted servers.
 	 */
+	@Synchronized
 	fun getAllServers(): List<Long> {
 		return whitelist.toList()
 	}
@@ -52,6 +52,7 @@ object Whitelist {
 	/**
 	 * Adds a server to the whitelist. If the server is already on the list, it will not be added again.
 	 */
+	@Synchronized
 	fun add(serverId: Long) {
 		if (!whitelist.contains(serverId)) {
 			whitelistDB.addServer(serverId)
@@ -62,6 +63,7 @@ object Whitelist {
 	/**
 	 * Removes a server from the whitelist if present.
 	 */
+	@Synchronized
 	fun remove(serverId: Long) {
 		whitelistDB.removeServer(serverId)
 		whitelist.remove(serverId)
