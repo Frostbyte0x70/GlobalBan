@@ -31,19 +31,11 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				Command(::runTrustedCommand)
 			) {
 				restrict(guild = true, perm = Permission.MANAGE_SERVER)
-				subcommand(SHOW_SUBCOMMAND, "Show list of trusted and non-trusted servers") {
-					option<String>("src", "(tmp) src ID", required = true)
-				}
-				// TODO: Remove
-				subcommand("who", "Show who trusts a given server") {
-					option<String>("server_id", "Server ID", required = true)
-				}
+				subcommand(SHOW_SUBCOMMAND, "Show list of trusted and non-trusted servers")
 				subcommand(ADD_SUBCOMMAND, "Add a server to the trusted list") {
-					option<String>("src", "(tmp) src ID", required = true)
 					option<String>("server_id", "ID of the server to add", required = true)
 				}
 				subcommand(REMOVE_SUBCOMMAND, "Remove a server from the trusted list") {
-					option<String>("src", "(tmp) src ID", required = true)
 					option<String>("server_id", "ID of the server to remove", required = true)
 				}
 			}
@@ -53,41 +45,24 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	private fun runTrustedCommand(event: GenericCommandInteractionEvent) {
 		when (event.subcommandName) {
 			SHOW_SUBCOMMAND -> runShowSubcommand(event)
-			"who" -> runWhoSubcommand(event)
 			ADD_SUBCOMMAND -> runAddSubcommand(event)
 			REMOVE_SUBCOMMAND -> runRemoveSubcommand(event)
 		}
 	}
 
 	private fun runShowSubcommand(event: GenericCommandInteractionEvent) {
-		// TODO: Remove
-		val serverId = event.getOption<String>("src")!!.toLongOrNull()
-		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
-			return
-		}
+		val server = event.guild!!
 
-		// TODO: Proper implementation
-		val trustedServers = TrustedServers.get().getTrustedBy(serverId)
-		var msg = "Trusted servers for $serverId:"  // TODO: Don't forget the server name here
+		val trustedServers = TrustedServers.get().getTrustedBy(server.idLong).minus(server.idLong)
+		val nonTrustedServers = jda.guilds.map { it.idLong }.minus(trustedServers.toSet()).minus(server.idLong)
+
+		var msg = "Trusted servers for ${server.name}:"
 		for (serverId in trustedServers) {
-			msg += "\n- $serverId"
+			msg += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
 		}
-		event.reply_(msg).queue()
-	}
-
-	// TODO: Remove
-	private fun runWhoSubcommand(event: GenericCommandInteractionEvent) {
-		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
-		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
-			return
-		}
-
-		val trustedServers = TrustedServers.get().getWhoTrusts(serverId)
-		var msg = "Servers who trust $serverId:"
-		for (serverId in trustedServers) {
-			msg += "\n- $serverId"
+		msg += "\nOther servers:"
+		for (serverId in nonTrustedServers) {
+			msg += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
 		}
 		event.reply_(msg).queue()
 	}
@@ -101,23 +76,25 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	}
 
 	private fun addRemove(event: GenericCommandInteractionEvent, add: Boolean) {
-		// TODO: Remove
-		val src = event.getOption<String>("src")!!.toLongOrNull()
-		if (src == null) {
-			event.reply_("Error: The provided src ID is not valid.", ephemeral = true).queue()
-			return
-		}
-
+		// TODO: Once Componentsv2 is supported by jda-ktx, consider replacing this with a Componentsv2 modal that
+		//  shows a list of checkboxes, one per server.
 		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
 		if (serverId == null) {
 			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
 			return
 		}
 
+		if (serverId == event.guild!!.idLong) {
+			event.reply_("You cannot ${if (add) "add" else "remove"} your own server ${if (add) "to" else "from"} " +
+				"the trusted list.", ephemeral = true).queue()
+			return
+		}
+
 		event.deferReply().queue()
 		try {
-			TrustedServers.get().setTrust(src, serverId, add)
-			event.hook.send("Successfully ${if (add) "added" else "removed"} the server to the trusted list.").queue()
+			TrustedServers.get().setTrust(event.guild!!.idLong, serverId, add)
+			event.hook.send("Successfully ${if (add) "added" else "removed"} the server ${if (add) "to" else "from"} " +
+				"the trusted list.").queue()
 		} catch (e: Exception) {
 			with(ErrorHandler(e)) {
 				printToErrorChannel(jda, event.guild)

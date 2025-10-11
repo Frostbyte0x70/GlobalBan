@@ -64,7 +64,7 @@ class WhitelistHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		}
 
 		for (serverId in servers) {
-			text += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)\n"
+			text += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
 		}
 		event.reply_(text).queue()
 	}

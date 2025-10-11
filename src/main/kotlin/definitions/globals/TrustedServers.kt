@@ -7,14 +7,6 @@ import definitions.db.TrustedDB
  * Object that stores the trust map between servers.
  * This is a single-instance object. It must be initialized by calling [create]. After that, the instance can be
  * retrieved using [get].
- * TODO: Test
- * 	 Since I don't know how to test this class without messing with the class hierarchy or learning a mocks
- * 	 framework, I can test it by simply creating some mock values on the DB, running this class through the
- * 	 debugger, and ensuring the in-memory maps are created correctly on startup.
- * 	 Then make the /trusted <add/remove> command on Discord temporarily allow setting both the src and dst IDs, and
- * 	 the /trusted list command output all trust elements (rather than the ones for the current server only). Do not
- * 	 map IDs to server names yet, do not add all servers the bot is in to the output yet.
- * 	 Then run the commands and check if the list is updated properly. Check the in-memory maps too.
  */
 object TrustedServers {
 	private lateinit var trustedDB: TrustedDB
@@ -44,16 +36,20 @@ object TrustedServers {
 
 	/**
 	 * Returns the list of servers that are trusted by the given server.
+	 * Always includes the server itself.
 	 */
 	fun getTrustedBy(serverId: Long): List<Long> {
-		return trustsMap[serverId] ?: listOf()
+		val list = trustsMap[serverId] ?: listOf()
+		return list.plus(serverId)
 	}
 
 	/**
 	 * Returns the list of servers who trust the given server.
+	 * Always includes the server itself.
 	 */
 	fun getWhoTrusts(serverId: Long): List<Long> {
-		return trustedByMap[serverId] ?: listOf()
+		val list = trustedByMap[serverId] ?: listOf()
+		return list.plus(serverId)
 	}
 
 	/**
