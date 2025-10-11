@@ -13,18 +13,24 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
  */
 class CommandCreator(private val jda: JDA) {
 	private val logger = getLogger(this::class)
-	private val updateCommandsAction: CommandListUpdateAction?
+
+	/**
+	 * Used to register global commands. Null if command test mode is enabled (global commands are registered for the
+	 * main server instead)
+	 */
+	private val globalUpdateCommandsAction = if (Env.commandTestMode) null else jda.updateCommands()
+
+	/**
+	 * Used to register commands for the main server. Null if the bot hasn't joined the main server yet.
+	 */
+	private val mainServerUpdateCommandsAction: CommandListUpdateAction?
 
 	init {
-		if (Env.commandTestMode) {
-			val mainServer = jda.getGuildById(Env.mainServerId)
+		val mainServer = jda.getGuildById(Env.mainServerId)
+		mainServer ?: logger.warn("Main server not found (maybe because the bot has not been added to it yet). " +
+			"Commands will not be registered for the main server.")
 
-			mainServer ?: logger.warn("Command test mode is enabled, but the main server cannot be found (maybe " +
-				"because the bot has not been added to it yet). Commands will not be registered.")
-			updateCommandsAction = mainServer?.updateCommands()
-		} else {
-			updateCommandsAction = jda.updateCommands()
-		}
+		mainServerUpdateCommandsAction = mainServer?.updateCommands()
 	}
 
 	/**
@@ -33,8 +39,14 @@ class CommandCreator(private val jda: JDA) {
 	 * @param jdaBuilder Code used to initialize the [SlashCommandData] of the JDA command
 	 */
 	fun slash(name: String, description: String, commandObj: Command, jdaBuilder: SlashCommandData.() -> Unit) {
-		if (updateCommandsAction != null) {
-			updateCommandsAction.slash(name, description, jdaBuilder)
+		val updateAction = if (commandObj.mainServerOnly || globalUpdateCommandsAction == null) {
+			mainServerUpdateCommandsAction
+		} else {
+			globalUpdateCommandsAction
+		}
+
+		if (updateAction != null) {
+			updateAction.slash(name, description, jdaBuilder)
 			jda.onCommand(name) { event -> commandObj.run(event) }
 		}
 	}
@@ -44,14 +56,7 @@ class CommandCreator(private val jda: JDA) {
 	 * be overwritten by the new batch.
 	 */
 	fun register() {
-		updateCommandsAction?.queue()
-
-		if (!Env.commandTestMode) {
-			// Clear local commands for the main server
-			val mainServer = jda.getGuildById(Env.mainServerId)
-
-			mainServer ?: logger.warn("Cannot find main server. Local commands for the server will not be cleared.")
-			mainServer?.updateCommands()?.queue()
-		}
+		globalUpdateCommandsAction?.queue()
+		mainServerUpdateCommandsAction?.queue()
 	}
 }
