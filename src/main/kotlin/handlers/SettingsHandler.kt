@@ -3,6 +3,7 @@ package handlers
 import definitions.Command
 import definitions.CommandCreator
 import definitions.ErrorHandler
+import definitions.TRUST_NEW_SERVERS_DEFAULT
 import definitions.globals.Settings
 import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
@@ -23,6 +24,7 @@ class SettingsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		private const val SETTINGS_COMMAND = "settings"
 		private const val SHOW_SUBCOMMAND = "show"
 		private const val NOTIFICATIONS_SUBCOMMAND = "notifications"
+		private const val TRUST_NEW_SERVERS_SUBCOMMAND = "trust_new_servers"
 	}
 
 	init {
@@ -37,6 +39,10 @@ class SettingsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				subcommand(NOTIFICATIONS_SUBCOMMAND, "Set notifications channel") {
 					option<GuildChannel>("channel", "Channel to send notifications to, omit to disable")
 				}
+				subcommand(TRUST_NEW_SERVERS_SUBCOMMAND, "Set whether to trust new servers by default") {
+					option<Boolean>("trust", "True to trust new servers the bot is added to by default",
+						required = true)
+				}
 			}
 		}
 	}
@@ -45,6 +51,7 @@ class SettingsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		when (event.subcommandName) {
 			SHOW_SUBCOMMAND -> runShowSubcommand(event)
 			NOTIFICATIONS_SUBCOMMAND -> runNotificationsSubcommand(event)
+			TRUST_NEW_SERVERS_SUBCOMMAND -> runTrustNewServersSubcommand(event)
 		}
 	}
 
@@ -53,7 +60,8 @@ class SettingsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val settings = Settings.get().getForServer(server.idLong)
 
 		val msg = "Settings for ${server.name}:\n" +
-			"- Notifications channel: ${settings?.notificationsChannelId?.let { "<#$it>" } ?: "None"}"
+			"- Notifications channel: ${settings?.notificationsChannelId?.let { "<#$it>" } ?: "None"}\n"+
+			"- Trust new servers by default: ${if (settings?.trustNewServers ?: TRUST_NEW_SERVERS_DEFAULT) "Yes" else "No"}"
 
 		event.reply_(msg).queue()
 	}
@@ -82,6 +90,25 @@ class SettingsHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			settings.notificationsChannelId = newId
 
 			val message = newId?.let { "Notifications channel set to <#$it>." } ?: "Notifications have been disabled."
+			event.hook.send(message).queue()
+		} catch (e: Exception) {
+			with(ErrorHandler(e)) {
+				printToErrorChannel(jda, event.guild)
+				replyDeferred(event)
+			}
+		}
+	}
+
+	private fun runTrustNewServersSubcommand(event: GenericCommandInteractionEvent) {
+		val server = event.guild!!
+		val settings = Settings.get().getOrCreateForServer(server.idLong)
+		val trust = event.getOption<Boolean>("trust")!!
+
+		event.deferReply().queue()
+		try {
+			settings.trustNewServers = trust
+			val message = if (trust) "New servers the bot is added to will be automatically trusted." else
+				"New servers the bot is added to will no longer be automatically trusted."
 			event.hook.send(message).queue()
 		} catch (e: Exception) {
 			with(ErrorHandler(e)) {

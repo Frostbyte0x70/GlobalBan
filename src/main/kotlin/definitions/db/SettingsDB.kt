@@ -8,7 +8,8 @@ import definitions.ServerSettings
  * Enum listing all settings and their corresponding database key
  */
 enum class SettingKey(val dbKey: String) {
-	KEY_NOTIFICATIONS_CHANNEL_ID("notifications_channel_id");
+	KEY_NOTIFICATIONS_CHANNEL_ID("notifications_channel_id"),
+	KEY_TRUST_NEW_SERVERS("trust_new_servers");
 
 	companion object {
 		fun fromDbKey(dbKey: String): SettingKey = entries.first { it.dbKey == dbKey }
@@ -30,7 +31,7 @@ class SettingsDB(val db: Database) {
 				"CREATE TABLE IF NOT EXISTS $SETTINGS_TABLE_NAME(server_id BIGINT(30) UNSIGNED NOT NULL, " +
 					"setting_key VARCHAR(64) NOT NULL," +
 					"setting_value VARCHAR(256) NOT NULL," +
-					"PRIMARY KEY (server_id));"
+					"PRIMARY KEY (server_id, setting_key));"
 			)
 		} catch (e: DbOperationException) {
 			throw FatalErrorException("Cannot create settings table", e)
@@ -68,12 +69,15 @@ class SettingsDB(val db: Database) {
 	fun setNotificationChannelId(serverId: Long, value: Long?) =
 		setLong(serverId, SettingKey.KEY_NOTIFICATIONS_CHANNEL_ID.dbKey, value)
 
+	fun setTrustNewServers(serverId: Long, value: Boolean) =
+		setBoolean(serverId, SettingKey.KEY_TRUST_NEW_SERVERS.dbKey, value)
+
 	/**
 	 * Sets the [settingValue] of the setting identified by [settingKey] for the server with the given [serverId]
 	 */
 	private fun setString(serverId: Long, settingKey: String, settingValue: String?) {
 		with(PrepStatement(db, "INSERT INTO $SETTINGS_TABLE_NAME (server_id, setting_key, setting_value) VALUES (?, ?, ?) " +
-			"ON DUPLICATE KEY UPDATE server_id = server_id")) {
+			"ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)")) {
 			setLong(serverId)
 			setString(settingKey)
 			setString(settingValue ?: "NULL")
@@ -82,6 +86,10 @@ class SettingsDB(val db: Database) {
 	}
 
 	private fun setLong(serverId: Long, settingKey: String, settingValue: Long?) {
+		setString(serverId, settingKey, settingValue?.toString())
+	}
+
+	private fun setBoolean(serverId: Long, settingKey: String, settingValue: Boolean?) {
 		setString(serverId, settingKey, settingValue?.toString())
 	}
 
@@ -94,6 +102,7 @@ class SettingsDB(val db: Database) {
 			with(settingsObj) {
 				when (settingKey) {
 					SettingKey.KEY_NOTIFICATIONS_CHANNEL_ID -> notificationsChannelId = settingValue.toLong()
+					SettingKey.KEY_TRUST_NEW_SERVERS -> trustNewServers = settingValue.toBoolean()
 				}
 			}
 		} catch (e: NumberFormatException) {
