@@ -33,7 +33,7 @@ class SettingsDB(val db: Database) {
 					"PRIMARY KEY (server_id));"
 			)
 		} catch (e: DbOperationException) {
-			throw FatalErrorException("Cannot create whitelist table", e)
+			throw FatalErrorException("Cannot create settings table", e)
 		}
 	}
 

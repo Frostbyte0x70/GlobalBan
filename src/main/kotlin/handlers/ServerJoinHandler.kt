@@ -21,6 +21,7 @@ class ServerJoinHandler(jda: JDA) {
 			}
 
 			// TODO: Server join setup
+			// Trust default servers, send alert to all servers
 		}
 	}
 }

@@ -18,9 +18,9 @@ data class ServerSettings(val serverId: Long) {
 	var notificationsChannelId: Long? = null
 		@Synchronized
 		set(value) {
-			field = value
 			if (sdb != null) {
 				sdb!!.setNotificationChannelId(serverId, value)
 			}
+			field = value
 		}
 }

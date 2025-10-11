@@ -55,18 +55,18 @@ class WhitelistHandler(private val jda: JDA, commandCreator: CommandCreator) {
 
 	private fun runShowSubcommand(event: GenericCommandInteractionEvent) {
 		val servers = Whitelist.get().getAllServers()
-		var text = "Whitelisted servers:\n"
+		var text = "Whitelisted servers:"
 
 		if (!servers.contains(Env.mainServerId)) {
 			// Main server is implicitly whitelisted
-			text += "- ${(jda.getGuildById(Env.mainServerId)?.name?.plus(" ")) ?: ""}(${Env.mainServerId}) " +
-				"(Implicit - Main server)\n"
+			text += "\n- ${(jda.getGuildById(Env.mainServerId)?.name?.plus(" ")) ?: ""}(${Env.mainServerId}) " +
+				"(Implicit - Main server)"
 		}
 
 		for (serverId in servers) {
-			text += "- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)\n"
+			text += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)\n"
 		}
-		event.reply_(text.removeSuffix("\n")).queue()
+		event.reply_(text).queue()
 	}
 
 	private fun runAddSubcommand(event: GenericCommandInteractionEvent) {
