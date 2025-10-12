@@ -9,6 +9,7 @@ import definitions.globals.Settings
 import definitions.globals.TrustedServers
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.jdabuilder.light
+import handlers.AlertHandler
 import handlers.BotStartHandler
 import handlers.ServerJoinHandler
 import handlers.SettingsHandler
@@ -48,6 +49,7 @@ class Main {
 		WhitelistHandler(jda, commandCreator)
 		SettingsHandler(jda, commandCreator)
 		TrustedHandler(jda, commandCreator)
+		AlertHandler(jda, commandCreator)
 
 		// Register all commands
 		commandCreator.register()

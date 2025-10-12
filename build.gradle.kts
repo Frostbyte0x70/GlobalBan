@@ -17,6 +17,7 @@ dependencies {
 	implementation("club.minnced:jda-ktx:0.12.0")
 	implementation("com.mysql:mysql-connector-j:9.4.0")
 	implementation("ch.qos.logback:logback-classic:1.5.19")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 	testImplementation(kotlin("test"))
 }
 
