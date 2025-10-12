@@ -3,7 +3,7 @@ package handlers
 import definitions.Command
 import definitions.CommandCreator
 import definitions.ErrorHandler
-import definitions.TRUST_NEW_SERVERS_DEFAULT
+import definitions.ServerSettings.Companion.TRUST_NEW_SERVERS_DEFAULT
 import definitions.globals.Settings
 import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict

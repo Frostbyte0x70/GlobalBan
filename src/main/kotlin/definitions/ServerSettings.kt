@@ -2,15 +2,17 @@ package definitions
 
 import definitions.db.SettingsDB
 
-/** Default value for the [ServerSettings.trustNewServers] setting */
-const val TRUST_NEW_SERVERS_DEFAULT = false
-
 /**
  * Holds the settings for a given server.
  * If the [sdb] property is set, updating the values of the properties in this class will automatically
  * sync them with the database.
  */
 data class ServerSettings(val serverId: Long) {
+	companion object {
+		/** Default value for the [ServerSettings.trustNewServers] setting */
+		const val TRUST_NEW_SERVERS_DEFAULT = false
+	}
+
 	@Suppress("RedundantSetter")
 	var sdb: SettingsDB? = null
 		@Synchronized

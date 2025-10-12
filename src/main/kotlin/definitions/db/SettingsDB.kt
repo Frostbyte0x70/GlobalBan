@@ -5,23 +5,23 @@ import FatalErrorException
 import definitions.ServerSettings
 
 /**
- * Enum listing all settings and their corresponding database key
- */
-enum class SettingKey(val dbKey: String) {
-	KEY_NOTIFICATIONS_CHANNEL_ID("notifications_channel_id"),
-	KEY_TRUST_NEW_SERVERS("trust_new_servers");
-
-	companion object {
-		fun fromDbKey(dbKey: String): SettingKey = entries.first { it.dbKey == dbKey }
-	}
-}
-
-/**
  * Class used to perform database operations related to per-server settings
  */
 class SettingsDB(val db: Database) {
 	companion object {
 		private const val SETTINGS_TABLE_NAME = "settings"
+	}
+
+	/**
+	 * Enum listing all settings and their corresponding database key
+	 */
+	enum class SettingKey(val dbKey: String) {
+		KEY_NOTIFICATIONS_CHANNEL_ID("notifications_channel_id"),
+		KEY_TRUST_NEW_SERVERS("trust_new_servers");
+
+		companion object {
+			fun fromDbKey(dbKey: String): SettingKey = entries.first { it.dbKey == dbKey }
+		}
 	}
 
 	init {
