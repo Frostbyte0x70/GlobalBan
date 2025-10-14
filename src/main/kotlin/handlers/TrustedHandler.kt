@@ -3,6 +3,7 @@ package handlers
 import definitions.Command
 import definitions.CommandCreator
 import definitions.ErrorHandler
+import definitions.TRUSTED_CMD_PERMISSION
 import definitions.globals.TrustedServers
 import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
@@ -11,13 +12,12 @@ import dev.minn.jda.ktx.interactions.components.getOption
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.text.toLongOrNull
 
 class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	companion object {
-		private const val TRUSTED_COMMAND = "trusted"
+		const val TRUSTED_COMMAND = "trusted"
 		private const val SHOW_SUBCOMMAND = "show"
 		private const val ADD_SUBCOMMAND = "add"
 		private const val REMOVE_SUBCOMMAND = "remove"
@@ -30,7 +30,7 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				"View or edit the list of trusted servers for this server",
 				Command(::runTrustedCommand)
 			) {
-				restrict(guild = true, perm = Permission.MANAGE_SERVER)
+				restrict(guild = true, perm = TRUSTED_CMD_PERMISSION)
 				subcommand(SHOW_SUBCOMMAND, "Show list of trusted and non-trusted servers")
 				subcommand(ADD_SUBCOMMAND, "Add a server to the trusted list") {
 					option<String>("server_id", "ID of the server to add", required = true)

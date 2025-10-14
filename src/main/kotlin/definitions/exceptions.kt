@@ -12,3 +12,8 @@ class IllegalOperationException(message: String? = null, cause: Throwable? = nul
  * Thrown when an error happens while performing a database operation
  */
 class DbOperationException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+
+/**
+ * Thrown when a generic error happens while processing a command
+ */
+class CommandErrorException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)

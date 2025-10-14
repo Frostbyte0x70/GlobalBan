@@ -14,7 +14,7 @@ class GlobalActionRunner<T>(val serverIds: List<Long>) {
 	/**
 	 * Runs the given [action] across all set servers.
 	 * [action] is a suspendable function that returns a result of type [T].
-	 * Returns a map that maps server IDs to their result object.
+	 * Once the action is done running on all servers, returns a map that maps server IDs to their result object.
 	 */
 	fun run(action: suspend (serverId: Long) -> T): Map<Long, T> {
 		results.clear()
