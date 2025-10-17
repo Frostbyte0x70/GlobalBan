@@ -14,7 +14,6 @@ import handlers.BanHandler
 import handlers.BotStartHandler
 import handlers.ServerJoinHandler
 import handlers.SettingsHandler
-import handlers.TestCommandsHandler
 import handlers.TrustedHandler
 import handlers.WhitelistHandler
 import net.dv8tion.jda.api.Permission
@@ -46,7 +45,6 @@ class Main {
 		// Create handlers
 		BotStartHandler(jda)
 		ServerJoinHandler(jda)
-		TestCommandsHandler(jda, commandCreator)
 		WhitelistHandler(jda, commandCreator)
 		SettingsHandler(jda, commandCreator)
 		TrustedHandler(jda, commandCreator)
