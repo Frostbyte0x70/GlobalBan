@@ -34,7 +34,7 @@ class ServerJoinHandler(private val jda: JDA) {
 		jda.listener<GuildJoinEvent> { event ->
 			// Leave joined guilds if they are not whitelisted
 			if (!Whitelist.get().isWhitelisted(event.guild.idLong)) {
-				logger.info("Leaving server '${event.guild.name} because it's not whitelisted'")
+				logger.info("Leaving server '${event.guild.name}' because it's not whitelisted")
 				event.guild.leave().queue()
 			}
 

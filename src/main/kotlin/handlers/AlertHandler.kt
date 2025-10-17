@@ -93,7 +93,7 @@ class AlertHandler(private val jda: JDA, commandCreator: CommandCreator) {
 
 		try {
 			val msg = ":loudspeaker: Global alert issued by <@${issuer.idLong}> (${issuer.name}) " +
-				"from $sourceServerName about <@${targetUser.idLong}> (${targetUser.name}): $message"
+				"from *$sourceServerName* about <@${targetUser.idLong}> (${targetUser.name}): $message"
 			channel.send(msg, mentions = Mentions.nothing()).await()
 			return true
 		} catch (e: Exception) {

@@ -138,7 +138,7 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				// Send message notifying the ban
 				try {
 					val msg = ":hammer: Global ban issued by <@${issuer.idLong}> (${issuer.name}) " +
-						"from ${sourceServer.name} for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
+						"from *${sourceServer.name}* for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
 						"\n - :white_check_mark: This ban has been automatically applied in your server."
 					channel.send(msg, mentions = Mentions.nothing()).await()
 				} catch (e: Exception) {
@@ -151,7 +151,7 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				// Try to send a fallback alert
 				try {
 					val msg = ":hammer: Global ban issued by <@${issuer.idLong}> (${issuer.name}) " +
-						"from ${sourceServer.name} for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
+						"from *${sourceServer.name}* for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
 						"\n - :warning: This ban has **not** been automatically applied in your server because an " +
 						"error occurred when trying to apply the ban. Check that the bot has the ban members " +
 						"permission. You can try to apply the ban again by clicking the below button."
@@ -171,7 +171,7 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			// Try to send an alternative alert
 			try {
 				val msg = ":hammer: Global ban issued by <@${issuer.idLong}> (${issuer.name}) " +
-					"from ${sourceServer.name} for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
+					"from *${sourceServer.name}* for <@${targetUser.idLong}> (${targetUser.name}): $reason" +
 					"\n - :warning: This ban has **not** been automatically applied in your server because the " +
 					"origin server is not on your trusted server list. You can use the buttons below to apply the " +
 					"ban, or to apply it and trust the origin server so future bans issued from there are " +
