@@ -24,6 +24,7 @@ fun hasPermission(member: Member, permission: Permission, channel: GuildChannel?
  * Attempts to retrieve a global or server command by its [name].
  * If a [server] is specified, a local command with the given name will be searched in the server. If [server] is
  * omitted or there's not a command with that name in the server, a global command will be searched instead.
+ * This method performs a synchronous request to the Discord API.
  * @return The first command with the given name, or null if no command was found with the given name.
  */
 fun getCommandByName(jda: JDA, name: String, server: Guild?): Command? {

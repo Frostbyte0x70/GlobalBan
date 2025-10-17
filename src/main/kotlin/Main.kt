@@ -10,6 +10,7 @@ import definitions.globals.TrustedServers
 import definitions.globals.Whitelist
 import dev.minn.jda.ktx.jdabuilder.light
 import handlers.AlertHandler
+import handlers.BanHandler
 import handlers.BotStartHandler
 import handlers.ServerJoinHandler
 import handlers.SettingsHandler
@@ -50,6 +51,7 @@ class Main {
 		SettingsHandler(jda, commandCreator)
 		TrustedHandler(jda, commandCreator)
 		AlertHandler(jda, commandCreator)
+		BanHandler(jda, commandCreator)
 
 		// Register all commands
 		commandCreator.register()
