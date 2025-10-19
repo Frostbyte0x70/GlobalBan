@@ -7,4 +7,4 @@ Its main features are:
 - **Global alerts**: Servers can issue alerts about users to watch out for that will be received by all the servers the bot has been added to.
 - **Whitelist**: The host of the bot manually determines which servers it can be added to.
 
-For more information, check out the wiki! (coming soon)
+For more information, check out [the wiki](https://github.com/Frostbyte0x70/GlobalBan/wiki)!
