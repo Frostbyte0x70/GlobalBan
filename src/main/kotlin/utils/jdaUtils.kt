@@ -1,5 +1,6 @@
 package utils
 
+import definitions.globals.Whitelist
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -112,4 +113,12 @@ fun canUseCommand(member: Member, server: Guild, command: Command, defaultPermis
 
 	// 4: Check default permissions (no role or user overrides, no channel denies)
 	return defaultPermission?.let { hasPermission(member, defaultPermission, channel) } ?: true
+}
+
+/**
+ * Returns all whitelisted servers the bot is currently in
+ */
+fun servers(jda: JDA): List<Guild> {
+	val whitelistIds = Whitelist.get().getAllServers()
+	return jda.guilds.filter { it.idLong in whitelistIds }
 }

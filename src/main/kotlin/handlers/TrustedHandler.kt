@@ -13,6 +13,7 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import utils.servers
 import kotlin.text.toLongOrNull
 
 class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
@@ -54,7 +55,7 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val server = event.guild!!
 
 		val trustedServers = TrustedServers.get().getTrustedBy(server.idLong).minus(server.idLong)
-		val nonTrustedServers = jda.guilds.map { it.idLong }.minus(trustedServers.toSet()).minus(server.idLong)
+		val nonTrustedServers = servers(jda).map { it.idLong }.minus(trustedServers.toSet()).minus(server.idLong)
 
 		var msg = "Trusted servers for ${server.name}:"
 		for (serverId in trustedServers) {

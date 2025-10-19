@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import utils.canUseCommand
 import utils.getCommandByName
+import utils.servers
 import kotlin.time.Duration
 
 /**
@@ -48,7 +49,7 @@ class ServerJoinHandler(private val jda: JDA) {
 			}
 
 			// Send alert to all servers
-			val serverIds = jda.guilds.map { it.idLong }.toList()
+			val serverIds = servers(jda).map { it.idLong }.toList()
 			GlobalActionRunner<Unit>(serverIds).run {
 				serverId -> handleNewServer(event.guild, serverId)
 			}

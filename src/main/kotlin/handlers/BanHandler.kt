@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import nothing
 import utils.canUseCommand
 import utils.getCommandByName
+import utils.servers
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
@@ -61,7 +62,7 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val targetUser = event.getOption<User>("user")!!
 		val reason = event.getOption<String>("reason")!!
 
-		val serverIds = jda.guilds.map { it.idLong }.toList()
+		val serverIds = servers(jda).map { it.idLong }.toList()
 		val sourceTrustedBy = TrustedServers.getWhoTrusts(sourceServer.idLong)
 
 		event.deferReply().queue()

@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import nothing
+import utils.servers
 
 /**
  * Handles the alert command
@@ -48,7 +49,7 @@ class AlertHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val targetUser = event.getOption<User>("user")!!
 		val message = event.getOption<String>("message")!!
 
-		val serverIds = jda.guilds.map { it.idLong }.toList()
+		val serverIds = servers(jda).map { it.idLong }.toList()
 
 		event.deferReply().queue()
 		try {
