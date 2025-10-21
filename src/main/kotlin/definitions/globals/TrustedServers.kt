@@ -57,6 +57,8 @@ object TrustedServers {
 	 */
 	fun setTrust(sourceServerId: Long, destinationServerId: Long, trust: Boolean) {
 		if (trust) {
+			if (sourceServerId == destinationServerId) return
+
 			trustedDB.setTrusted(sourceServerId, destinationServerId)
 
 			var list = trustsMap[sourceServerId] ?: mutableListOf()
