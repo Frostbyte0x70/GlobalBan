@@ -1,0 +1,32 @@
+services:
+  globalban:
+    build: .
+    restart: unless-stopped
+    environment:
+      # Discord bot token
+      BOT_TOKEN: "..."
+      # Main server ID
+      MAIN_SERVER_ID: "..."
+      # Channel within the main server where error messages should be posted
+      MAIN_ERROR_CHANNEL: "..."
+      # Database connection values
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: "root"
+      DB_PASSWORD: "globalban"
+      DB_DATABASE: "globalban"
+      # Default logging level
+      LOG_LEVEL: "INFO"
+      # True to register commands only in the main server
+      COMMAND_TEST_MODE: "false"
+    depends_on:
+      - db
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "globalban"
+      MYSQL_DATABASE: "globalban"
+    volumes:
+      - "./db_data:/var/lib/mysql"
