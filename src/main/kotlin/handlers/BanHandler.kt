@@ -199,8 +199,9 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	private fun handleApplyBanButton(event: ButtonInteractionEvent, issuer: User, sourceServer: Guild, targetUser: User,
 		reason: String) {
 		val server = event.guild!!
+		val member = event.member!!
 
-		if (!event.member!!.hasPermission(Permission.BAN_MEMBERS)) {
+		if (!member.hasPermission(Permission.BAN_MEMBERS)) {
 			event.reply_("You don't have permission to ban members in this server.").queue()
 			return
 		}
@@ -209,7 +210,8 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		try {
 			server.ban(targetUser, 0, TimeUnit.SECONDS)
 				.reason("Global ban by ${issuer.name} from ${sourceServer.name}: $reason").complete()
-			event.hook.send("Ban successfully applied manually.").queue()
+			event.hook.send("Ban successfully applied manually by <@${member.idLong}>.", mentions = Mentions.nothing())
+				.queue()
 			event.editButton(jda.button(ButtonStyle.PRIMARY, "Ban applied",
 				emoji = Emoji.fromUnicode("✅"), disabled = true, listener = {})).queue()
 		} catch (e: Exception) {
@@ -224,8 +226,9 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	private fun handleApplyBanAndTrustButton(event: ButtonInteractionEvent, issuer: User, sourceServer: Guild,
 		targetUser: User, reason: String) {
 		val server = event.guild!!
+		val member = event.member!!
 
-		if (!event.member!!.hasPermission(Permission.BAN_MEMBERS)) {
+		if (!member.hasPermission(Permission.BAN_MEMBERS)) {
 			event.reply_("You don't have permission to ban members in this server.").queue()
 			return
 		}
@@ -235,7 +238,7 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			val command = getCommandByName(jda, TrustedHandler.TRUSTED_COMMAND, server)
 				?: throw CommandErrorException("Cannot find command /${TrustedHandler.TRUSTED_COMMAND}")
 
-			if (!canUseCommand(event.member!!, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
+			if (!canUseCommand(member, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
 				event.hook.send("You don't have permission to modify the trusted server list.").queue()
 				return
 			}
@@ -244,8 +247,8 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				.reason("Global ban by ${issuer.name} from ${sourceServer.name}: $reason").complete()
 			TrustedServers.setTrust(server.idLong, sourceServer.idLong, true)
 
-			event.hook.send("Ban successfully applied manually. The origin server has also been added to the " +
-				"trusted server list.").queue()
+			event.hook.send("Ban successfully applied manually by <@${member.idLong}>. The origin server has also " +
+				"been added to the trusted server list.", mentions = Mentions.nothing()).queue()
 			event.editButton(jda.button(ButtonStyle.PRIMARY, "Applied and trusted",
 				emoji = Emoji.fromUnicode("✅"), disabled = true, listener = {})).queue()
 		} catch (e: Exception) {

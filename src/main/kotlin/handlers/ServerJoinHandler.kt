@@ -12,6 +12,7 @@ import definitions.globals.Whitelist
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.listener
 import dev.minn.jda.ktx.interactions.components.button
+import dev.minn.jda.ktx.messages.Mentions
 import dev.minn.jda.ktx.messages.send
 import getLogger
 import net.dv8tion.jda.api.JDA
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import nothing
 import utils.canUseCommand
 import utils.getCommandByName
 import utils.servers
@@ -115,19 +117,21 @@ class ServerJoinHandler(private val jda: JDA) {
 
 	private fun handleTrustServerButton(event: ButtonInteractionEvent, newServerId: Long) {
 		val server = event.guild!!
+		val member = event.member!!
 
 		event.deferReply().queue()
 		try {
 			val command = getCommandByName(jda, TrustedHandler.TRUSTED_COMMAND, server)
 				?: throw CommandErrorException("Cannot find command /${TrustedHandler.TRUSTED_COMMAND}")
 
-			if (!canUseCommand(event.member!!, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
+			if (!canUseCommand(member, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
 				event.hook.send("You don't have permission to modify the trusted server list.").queue()
 				return
 			}
 
 			TrustedServers.setTrust(server.idLong, newServerId, true)
-			event.hook.send("Successfully added the new server to the trusted server list.").queue()
+			event.hook.send("<@${member.idLong}> successfully added the new server to the trusted server list.",
+				mentions = Mentions.nothing()).queue()
 			event.editButton(jda.button(ButtonStyle.PRIMARY, "Server trusted",
 				emoji = Emoji.fromUnicode("✅"), disabled = true, listener = {})).queue()
 		} catch (e: Exception) {
