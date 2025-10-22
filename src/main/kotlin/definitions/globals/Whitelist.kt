@@ -42,7 +42,7 @@ object Whitelist {
 	}
 
 	/**
-	 * Returns a list with the ID of all whitelisted servers.
+	 * Returns a list with the ID of all explicitly whitelisted servers.
 	 */
 	@Synchronized
 	fun getAllServers(): List<Long> {
