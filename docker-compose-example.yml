@@ -11,7 +11,7 @@ services:
       MAIN_ERROR_CHANNEL: "..."
       # Database connection values
       DB_HOST: db
-      DB_PORT: 33060
+      DB_PORT: 3306
       DB_USER: "root"
       DB_PASSWORD: "globalban"
       DB_DATABASE: "globalban"
