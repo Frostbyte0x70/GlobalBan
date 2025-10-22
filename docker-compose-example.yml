@@ -11,7 +11,7 @@ services:
       MAIN_ERROR_CHANNEL: "..."
       # Database connection values
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: 33060
       DB_USER: "root"
       DB_PASSWORD: "globalban"
       DB_DATABASE: "globalban"
@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
   db:
-    image: mysql
+    image: mysql:8.4.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:

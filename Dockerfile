@@ -1,4 +1,4 @@
-FROM gradle:jdk19
+FROM gradle:jdk20
 
 WORKDIR /app
 

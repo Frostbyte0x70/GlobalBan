@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-	mainClass.set("Main")
+	mainClass.set("MainKt")
 }
 
 group = "org.globalban"
