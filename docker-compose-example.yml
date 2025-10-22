@@ -22,8 +22,9 @@ services:
     depends_on:
       - db
   db:
+    # TODO: Auth method has changed in mysql 9.0. Figure out how to get it working.
     image: mysql:8.4.0
-    command: --default-authentication-plugin=mysql_native_password
+    command: --mysql-native-password=ON
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "globalban"
