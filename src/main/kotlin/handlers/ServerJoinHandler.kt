@@ -125,12 +125,13 @@ class ServerJoinHandler(private val jda: JDA) {
 				?: throw CommandErrorException("Cannot find command /${TrustedHandler.TRUSTED_COMMAND}")
 
 			if (!canUseCommand(member, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
-				event.hook.send("You don't have permission to modify the trusted server list.").queue()
+				event.hook.send("<@${member.idLong}> You don't have permission to modify the trusted server list.",
+					mentions = Mentions.nothing()).queue()
 				return
 			}
 
 			TrustedServers.setTrust(server.idLong, newServerId, true)
-			event.hook.send("<@${member.idLong}> successfully added the new server to the trusted server list.",
+			event.hook.send("<@${member.idLong}> Successfully added the new server to the trusted server list.",
 				mentions = Mentions.nothing()).queue()
 			event.editButton(jda.button(ButtonStyle.PRIMARY, "Server trusted",
 				emoji = Emoji.fromUnicode("✅"), disabled = true, listener = {})).queue()

@@ -202,7 +202,8 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val member = event.member!!
 
 		if (!member.hasPermission(Permission.BAN_MEMBERS)) {
-			event.reply_("You don't have permission to ban members in this server.").queue()
+			event.reply_("<@${member.idLong}> You don't have permission to ban members in this server.",
+				mentions = Mentions.nothing()).queue()
 			return
 		}
 
@@ -229,7 +230,8 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		val member = event.member!!
 
 		if (!member.hasPermission(Permission.BAN_MEMBERS)) {
-			event.reply_("You don't have permission to ban members in this server.").queue()
+			event.reply_("<@${member.idLong}> You don't have permission to ban members in this server.",
+				mentions = Mentions.nothing()).queue()
 			return
 		}
 
@@ -239,7 +241,8 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				?: throw CommandErrorException("Cannot find command /${TrustedHandler.TRUSTED_COMMAND}")
 
 			if (!canUseCommand(member, server, command, TRUSTED_CMD_PERMISSION, event.guildChannel)) {
-				event.hook.send("You don't have permission to modify the trusted server list.").queue()
+				event.hook.send("<@${member.idLong}> You don't have permission to modify the trusted server list.",
+					mentions = Mentions.nothing()).queue()
 				return
 			}
 
