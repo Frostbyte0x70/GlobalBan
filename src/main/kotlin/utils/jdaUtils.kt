@@ -30,13 +30,13 @@ fun hasPermission(member: Member, permission: Permission, channel: GuildChannel?
  * @return The first command with the given name, or null if no command was found with the given name.
  */
 fun getCommandByName(jda: JDA, name: String, server: Guild?): Command? {
-	val serverCommand = server?.retrieveCommands()?.complete()?.first { it.name == name }
+	val serverCommand = server?.retrieveCommands()?.complete()?.firstOrNull { it.name == name }
 	if (serverCommand != null) {
 		return serverCommand
 	}
 
 	// Try searching for a global command
-	return jda.retrieveCommands().complete().first { it.name == name }
+	return jda.retrieveCommands().complete().firstOrNull { it.name == name }
 }
 
 /**
