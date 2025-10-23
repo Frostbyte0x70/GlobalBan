@@ -22,6 +22,8 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		private const val SHOW_SUBCOMMAND = "show"
 		private const val ADD_SUBCOMMAND = "add"
 		private const val REMOVE_SUBCOMMAND = "remove"
+
+		private const val ALL_OPTION_VALUE = "all"
 	}
 
 	init {
@@ -34,10 +36,12 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 				restrict(guild = true, perm = TRUSTED_CMD_PERMISSION)
 				subcommand(SHOW_SUBCOMMAND, "Show list of trusted and non-trusted servers")
 				subcommand(ADD_SUBCOMMAND, "Add a server to the trusted list") {
-					option<String>("server_id", "ID of the server to add", required = true)
+					option<String>("server_id", "ID of the server to add, or 'all' to trust all existing servers",
+						required = true)
 				}
 				subcommand(REMOVE_SUBCOMMAND, "Remove a server from the trusted list") {
-					option<String>("server_id", "ID of the server to remove", required = true)
+					option<String>("server_id", "ID of the server to remove, or 'all' to untrust all existing servers",
+						required = true)
 				}
 			}
 		}
@@ -79,12 +83,22 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 	private fun addRemove(event: GenericCommandInteractionEvent, add: Boolean) {
 		// TODO: Once Componentsv2 is supported by jda-ktx, consider replacing this with a Componentsv2 modal that
 		//  shows a list of checkboxes, one per server.
-		val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
-		if (serverId == null) {
-			event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
-			return
-		}
+		val optionValue = event.getOption<String>("server_id")!!
 
+		if (optionValue == ALL_OPTION_VALUE) {
+			addRemoveAll(event, add)
+		} else {
+			val serverId = event.getOption<String>("server_id")!!.toLongOrNull()
+			if (serverId == null) {
+				event.reply_("Error: The provided server ID is not valid.", ephemeral = true).queue()
+				return
+			}
+
+			addRemoveOne(event, serverId, add)
+		}
+	}
+
+	private fun addRemoveOne(event: GenericCommandInteractionEvent, serverId: Long, add: Boolean) {
 		if (serverId == event.guild!!.idLong) {
 			event.reply_("You cannot ${if (add) "add" else "remove"} your own server ${if (add) "to" else "from"} " +
 				"the trusted list.", ephemeral = true).queue()
@@ -96,6 +110,23 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			TrustedServers.get().setTrust(event.guild!!.idLong, serverId, add)
 			event.hook.send("Successfully ${if (add) "added" else "removed"} the server ${if (add) "to" else "from"} " +
 				"the trusted list.").queue()
+		} catch (e: Exception) {
+			with(ErrorHandler(e)) {
+				printToErrorChannel(jda, event.guild)
+				replyDeferred(event)
+			}
+		}
+	}
+
+	private fun addRemoveAll(event: GenericCommandInteractionEvent, add: Boolean) {
+		event.deferReply().queue()
+		try {
+			for (server in servers(jda)) {
+				TrustedServers.get().setTrust(event.guild!!.idLong, server.idLong, add)
+			}
+
+			event.hook.send("Successfully ${if (add) "added" else "removed"} all existing servers " +
+				"${if (add) "to" else "from"} the trusted list.").queue()
 		} catch (e: Exception) {
 			with(ErrorHandler(e)) {
 				printToErrorChannel(jda, event.guild)
