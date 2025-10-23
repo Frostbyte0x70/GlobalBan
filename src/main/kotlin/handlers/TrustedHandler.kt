@@ -61,7 +61,7 @@ class TrustedHandler(private val jda: JDA, commandCreator: CommandCreator) {
 		for (serverId in trustedServers) {
 			msg += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
 		}
-		msg += "\nOther servers:"
+		msg += "\nOther (non-trusted) servers:"
 		for (serverId in nonTrustedServers) {
 			msg += "\n- ${(jda.getGuildById(serverId)?.name?.plus(" ")) ?: ""}($serverId)"
 		}
