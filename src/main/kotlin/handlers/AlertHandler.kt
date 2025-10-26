@@ -85,7 +85,13 @@ class AlertHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			return false
 		}
 
-		val channelId = Settings.get().getForServer(targetServerId)?.notificationsChannelId ?: return false
+		val channelId = Settings.get().getForServer(targetServerId)?.notificationsChannelId
+		if (channelId == null) {
+			// Notifications are disabled here. This is a perfectly valid configuration, so we return success.
+			logger.info("Skipping alert message for $targetServerId because notifications are disabled.")
+			return true
+		}
+
 		val channel = server.getTextChannelById(channelId)
 		if (channel == null) {
 			logger.error("Channel $channelId in server $targetServerId is not a text channel. Cannot send alert message.")
