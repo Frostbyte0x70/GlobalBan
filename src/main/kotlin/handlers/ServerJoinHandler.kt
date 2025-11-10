@@ -39,6 +39,7 @@ class ServerJoinHandler(private val jda: JDA) {
 			if (!Whitelist.get().isWhitelisted(event.guild.idLong)) {
 				logger.info("Leaving server '${event.guild.name}' because it's not whitelisted")
 				event.guild.leave().queue()
+				return@listener
 			}
 
 			// Mark main server as trusted
