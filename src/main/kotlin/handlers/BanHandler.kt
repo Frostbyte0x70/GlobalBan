@@ -125,8 +125,15 @@ class BanHandler(private val jda: JDA, commandCreator: CommandCreator) {
 			}
 		}
 
-		val channelId = Settings.get().getForServer(targetServerId)?.notificationsChannelId ?:
-			return BanRequestResult.fromSteps(trusted, banSuccess)
+		val channelId = Settings.get().getForServer(targetServerId)?.notificationsChannelId
+		if (channelId == null) {
+			// Notifications are disabled here. This is a perfectly valid configuration, so we return as if the
+			// notification was successfully sent (whoever sent the command doesn't need to know how many servers
+			// have notifications disabled).
+			logger.info("Skipping ban request message for $targetServerId because notifications are disabled.")
+			return BanRequestResult.fromSteps(trusted, banSuccess, alertSuccess = true)
+		}
+
 		val channel = server.getTextChannelById(channelId)
 		if (channel == null) {
 			logger.error("Channel $channelId in server $targetServerId is not a text channel. Cannot send " +
